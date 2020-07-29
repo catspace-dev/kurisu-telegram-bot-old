@@ -29,5 +29,3 @@ class UserMiddleware(BaseMiddleware):
 
     async def on_process_callback_query(self, callback_query: CallbackQuery, data: dict):
         data['user'] = await self.get_userdata(callback_query.from_user.id)
-
-

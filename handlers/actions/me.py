@@ -1,5 +1,4 @@
 from aiogram.types import Message
-import string
 
 
 async def me_cmd(msg: Message):
