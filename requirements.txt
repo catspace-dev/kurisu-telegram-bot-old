@@ -18,3 +18,7 @@ tortoise-orm==0.16.13
 typing-extensions==3.7.4.2
 win32-setctime==1.0.1
 yarl==1.4.2
+click==7.1.1
+dnspython3==1.15.0
+six==1.14.0
+mcstatus==3.1.1
