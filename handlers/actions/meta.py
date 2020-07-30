@@ -4,8 +4,11 @@ from models.action import Action
 
 
 def prepare_reply(sender, recipient, action: Action):
-    return action.text\
-                .format(active=sender, passive=recipient)
+    text = action.text.format(active=sender, passive=recipient)
+    print(text)
+    formatted = f'<i>{text}</i>'
+    print(formatted)
+    return formatted
 
 
 async def meta_action(msg: Message):
@@ -18,7 +21,7 @@ async def meta_action(msg: Message):
     if msg.reply_to_message:
         recipient = msg.reply_to_message.from_user.full_name
     else:
-        message_list = msg.parse_entities().split(' ', 1)
+        message_list = msg.text.split(' ', 1)
         if len(message_list) < 2:
             return await msg.answer(
                "Если ты не реплаишь сообщение, будь добр, укажи цель текстом.")
@@ -28,4 +31,4 @@ async def meta_action(msg: Message):
     if action := await Action.get(chat_id=id_,
                                   command=command):
         response = prepare_reply(sender, recipient, action)
-        await msg.answer(response)
+        await msg.answer(response, parse_mode='HTML')
