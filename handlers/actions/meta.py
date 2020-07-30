@@ -29,4 +29,3 @@ async def meta_action(msg: Message):
                                   command=command):
         response = prepare_reply(sender, recipient, action)
         await msg.answer(response)
-        await msg.delete()

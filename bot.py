@@ -16,8 +16,8 @@ def on_startup():
     logger.info("Register handlers...")
     # Register you handlers here.
     handlers.default.setup(dp)
-    handlers.actions.setup(dp)
     handlers.mcping.setup(dp)
+    handlers.actions.setup(dp)
     dp.middleware.setup(middlewares.UserMiddleware())
 
 

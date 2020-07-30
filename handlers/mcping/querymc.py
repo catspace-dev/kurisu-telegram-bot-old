@@ -1,7 +1,7 @@
 from aiogram.types import Message
-from loguru import logger
 from mcstatus import MinecraftServer
 import socket
+
 
 async def querymc_cmd(msg: Message):
     try:
