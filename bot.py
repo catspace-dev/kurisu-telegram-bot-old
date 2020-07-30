@@ -6,6 +6,7 @@ import config
 import handlers
 import middlewares
 
+
 storage = MemoryStorage()
 telegram_bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
 dp = Dispatcher(telegram_bot, storage=storage)
@@ -15,8 +16,8 @@ def on_startup():
     logger.info("Register handlers...")
     # Register you handlers here.
     handlers.default.setup(dp)
-    handlers.actions.setup(dp)
     handlers.mcping.setup(dp)
+    handlers.actions.setup(dp)
     dp.middleware.setup(middlewares.UserMiddleware())
 
 
@@ -24,7 +25,8 @@ async def database_init():
     await Tortoise.init(
         db_url='sqlite://db.sqlite3',
         modules={
-            'model': ['models.user']
+            'model': ['models.user',
+                      'models.action']
         }
     )
     await Tortoise.generate_schemas()

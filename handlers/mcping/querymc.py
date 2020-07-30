@@ -1,5 +1,4 @@
 from aiogram.types import Message
-from loguru import logger
 from mcstatus import MinecraftServer
 import socket
 
@@ -30,13 +29,13 @@ async def querymc_cmd(msg: Message):
             maxonline = str(qry.players.max)
             if not qry.players.names:
                 await msg.edit_text("🎾 <b>Сервер включен.</b>"
-                                    "\n * Онлайн: " + online
-                                    " из " + maxonline, "HTML")
+                                    f"\n * Онлайн: {online}"
+                                    f" из {maxonline}", "HTML")
             else:
                 playerlist = ""
                 for playername in qry.players.names:
-                    playerlist += "<code>" + str(playername) + "</code> "
-                await msg.edit_text("🎾 <b>Сервер включен.</b>"
-                                    "\n * Онлайн: <i>" + online
-                                    " из " + maxonline + "</i>"
-                                    "\n * Игроки: " + playerlist, "HTML")
+                    playerlist += f"<code>{playername}</code> "
+                await msg.edit_text("🎾 <b>Сервер включен.</b>\n"
+                                    f" * Онлайн: <i>{online}"
+                                    f" из {maxonline}</i>\n"
+                                    f" * Игроки: {playerlist}", "HTML")
