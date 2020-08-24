@@ -1,34 +1,42 @@
+from random import choice
+from typing import Optional
+
 from aiogram.types import Message
 
-from models.action import Action
+from utlis import get_chat
+from models.action import ActionCommand
 
 
-def prepare_reply(sender, recipient, action: Action):
-    text = action.text.format(active=sender, passive=recipient)
-    print(text)
+def get_repicient(msg: Message) -> Optional[str]:
+    if msg.reply_to_message:
+        return msg.reply_to_message.from_user.full_name
+    else:
+        _, *who = msg.text.split(' ', 1)
+        return who.pop() if who else None
+
+
+def prepare_reply(sender, recipient, template):
+    text = template.format(active=sender, passive=recipient)
     formatted = f'<i>{text}</i>'
-    print(formatted)
     return formatted
 
 
 async def meta_action(msg: Message):
-    command = msg.get_command().replace('/', '')
-    sender = msg.from_user.full_name
-    id_ = msg.chat.id
-    if not await Action.exists(chat_id=id_, command=command):
+    chat = await get_chat(msg.chat.id)
+    command = msg.get_command(pure=True)
+    command = await ActionCommand.get_or_none(chat_id=chat, command=command)
+    if not command:
         return
-    recipient = None
-    if msg.reply_to_message:
-        recipient = msg.reply_to_message.from_user.full_name
-    else:
-        message_list = msg.text.split(' ', 1)
-        if len(message_list) < 2:
-            return await msg.answer(
-               "Если ты не реплаишь сообщение, будь добр, укажи цель текстом.")
-        else:
-            recipient = message_list[1]
-
-    if action := await Action.get(chat_id=id_,
-                                  command=command):
-        response = prepare_reply(sender, recipient, action)
-        await msg.answer(response, parse_mode='HTML')
+    templates = await command.templates
+    gifs = await command.attachs
+    sender = msg.from_user.full_name
+    repicient = get_repicient(msg)
+    template = choice(templates).text
+    gif = choice(gifs).file_id
+    if '{passive}' in template and not repicient:
+        await msg.reply('Либо реплай, либо укажи текстом')
+        return
+    reply = prepare_reply(sender, repicient, template)
+    await msg.reply(reply, parse_mode='HTML')
+    if gifs:
+        await msg.answer_animation(gif)
