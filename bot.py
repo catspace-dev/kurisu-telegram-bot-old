@@ -26,7 +26,8 @@ async def database_init():
         db_url='sqlite://db.sqlite3',
         modules={
             'model': ['models.user',
-                      'models.action']
+                      'models.action',
+                      'models.chats']
         }
     )
     await Tortoise.generate_schemas()
