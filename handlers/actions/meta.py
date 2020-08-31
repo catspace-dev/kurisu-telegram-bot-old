@@ -3,7 +3,7 @@ from typing import Optional
 
 from aiogram.types import Message
 
-from utlis import get_chat
+from utlis.getters import get_chat
 from models.action import ActionCommand
 
 
@@ -32,11 +32,11 @@ async def meta_action(msg: Message):
     sender = msg.from_user.full_name
     repicient = get_repicient(msg)
     template = choice(templates).text
-    gif = choice(gifs).file_id
     if '{passive}' in template and not repicient:
         await msg.reply('Либо реплай, либо укажи текстом')
         return
     reply = prepare_reply(sender, repicient, template)
     await msg.reply(reply, parse_mode='HTML')
     if gifs:
+        gif = choice(gifs).file_id
         await msg.answer_animation(gif)

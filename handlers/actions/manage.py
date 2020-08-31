@@ -2,13 +2,14 @@ from aiogram.types import Message
 from models.action import ActionCommand, ActionTemplate, ActionAttachs
 from typing import Optional
 
-from utlis import get_chat, get_gif
+from utlis.getters import get_chat, get_gif
 
 
 async def router(message: Message):
     text = message.text.replace("/action ", "", 1)
     # args can be optional with *
     subcommand, *args = text.split(' ', 1)
+    print(args)
     reply = "неверно заданы аргументы"
     if subcommand == "add":
         if args:
@@ -53,7 +54,7 @@ async def router(message: Message):
 
     elif subcommand == "cleargif":
         if args:
-            reply = await clear_gifs(message.chat.id, args.pop)
+            reply = await clear_gifs(message.chat.id, args.pop())
         else:
             reply = "укажите название команды"
     await message.reply(reply)
@@ -75,6 +76,7 @@ async def add_action(chat_id,
 
 async def delete_action(chat_id, name: str) -> str:
     chat = await get_chat(chat_id)
+    print(chat_id, name)
     action = await ActionCommand.get_or_none(chat_id=chat, command=name)
     if action:
         await action.delete()
@@ -126,6 +128,9 @@ async def add_gif(chat_id, command, file_id) -> str:
 
 async def clear_gifs(chat_id, command) -> str:
     chat = await get_chat(chat_id)
-    command = await ActionCommand.get(chat_id=chat, command=command)
-    await ActionAttachs.filter(command=command).delete()
-    return "очищено"
+    command = await ActionCommand.get_or_none(chat_id=chat, command=command)
+    if command:
+        await ActionAttachs.filter(command=command).delete()
+        return "очищено"
+    else:
+        return "не найдена команда"
